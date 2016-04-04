@@ -1,0 +1,39 @@
+{
+  "name": "Cookie Monster",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "CSE 4471 OSU",
+  "homepage_url": "https://github.com/mchen804/CSE4471Project",
+  "icons": {
+    "16":  "src/img/icon16.png",
+    "48":  "src/img/icon48.png",
+    "128": "src/img/icon128.png"
+  },
+  "default_locale": "en",
+  "background": {
+    "page": "src/background.html",
+    "persistent": true
+  },
+  "options_page": "src/options/index.html",
+  "browser_action": {
+    "default_icon":  "src/img/icon19.png",
+    "default_title": "Cookie Monster",
+    "default_popup": "src/popup.html"
+  },
+  "permissions": [
+    "bookmarks",
+    "chrome://favicon/",
+    "contentSettings",
+    "contextMenus",
+    "cookies",
+    "history",
+    "idle",
+    "notifications"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js":      ["src/js/inject.js"]
+    }
+  ]
+}
