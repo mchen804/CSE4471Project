@@ -1,10 +1,139 @@
-#mainPopup {
-  font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
-  padding: 10px;
-  hiehgt: 200px;
-  width: 400px;
+body {
+	background-color: black;
 }
 
-h1 {
-  font-size: 2em;
+#Tabs {
+	background-image: url("../css/cookies.jpeg");
+	height: 150px;
+	width: 400px;
+	margin: 0px;
+	display: block;
+	border: 1px solid white;
+	border-radius: 5px;
+}
+
+#appInfo {
+    font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    height: 150px;
+    width: 400px;
+    text-align: center;
+    /*color: #b30000;*/
+    font-size: 14px;
+    color: white;
+    margin-bottom: 0em;
+}
+
+#appInfo a {
+	text-decoration: none;
+	color: yellow;
+}
+
+#appInfo a:hover {
+	text-decoration: underline;
+}
+
+#Tabs ul li {
+	font-family: 'Trebuchet MS', Arial, sans-serif;
+	display: inline-block;
+	margin-right: 3em;
+}
+
+#Tabs ul li a {
+	font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+	border: 2px solid black;
+	border-bottom: none;
+	font-size: 20px;
+	text-decoration: none;
+	font-weight: bold;
+	color:black;
+	padding-left: 2px;
+	padding-right: 2px;
+
+	-moz-border-radius-topleft: 4px;
+	border-top-left-radius: 4px;
+	-moz-border-radius-topright: 4px;
+	border-top-right-radius: 4px;
+}
+
+#Tabs ul li a:hover {
+	text-decoration: underline;
+}
+
+/*#bottomBar {
+	position: fixed;
+	background-color: white;
+}*/
+
+#bottomBar p {
+	display: inline-block;
+	font-family: "Trebuchet MS", Arial, sans-serif;
+	color: gray;
+	margin-left: 1em;
+	margin-right: 1em;
+	position: relative;
+}
+
+#bottomBar a {
+	color: yellow;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+#bottomBar a:hover {
+	text-decoration: underline;
+}
+
+.currentInfo, .blackList{
+	/*border: 1px solid white;*/
+	position: block;
+	width:250px;
+	margin: 2em auto;
+	font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+}
+
+.currentInfo th {
+	padding-right: 2em;
+	color: white;
+	text-decoration: underline;
+	font-weight: bold;
+	font-size: 16px;
+} 
+.blackList th {
+	padding-right: 2em;
+	color: white;
+	text-decoration: underline;
+	font-weight: bold;
+	font-size: 16px;
+} 
+
+.blackList .Site { 
+	color: white;
+	font-size: 16px;
+	padding-right: 2em;
+	text-decoration: none;
+} 
+
+.currentInfo .Site, .Cookie { 
+	color: white;
+	font-size: 16px;
+	padding-right: 2em;
+	text-decoration: none;
+} 
+.currentInfo, .blackList h1 {
+	text-decoration: none;
+	text-align: center;
+	color: white;
+}
+
+.deleteButton, .removeButton {
+	border-color: white;
+	background-color: white;
+	border-radius: 5px;
+	color:black;
+	margin-left: 2em;
+	padding-left: 2px;
+	padding-right: 2px;
 }
