@@ -75,7 +75,8 @@ a:hover {
 }
 
 #cookieStats h1#percentage {
-  font-size: 18px;
+  font-size: 23px;
+  margin: 10px 0 0 0 !important;
 }
 
 #currentTab {

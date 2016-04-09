@@ -72,7 +72,7 @@
   <section ng-show="currentTab.length > 0">
     <md-subheader class="md-primary">For This Page</md-subheader>
     <md-divider></md-divider>
-    <p>Click on a Domain Name to add it to the Whitelist</p>
+    <p>Click on a Domain Name to add or remove it from the Cookie Whitelist</p>
   </section>
   <section id="currentTab" class="md-padding" ng-show="currentTab.length > 0">
     <div data-ng-repeat="domain in currentTab" title="{{domain}}" class="cookie cookie-{{$index}}" ng-click="whitelistSite(domain)">

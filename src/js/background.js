@@ -48,7 +48,7 @@ var eat = function(tab) {
             cookiePageTotal++;
           }
         });
-      } else if (cookies.length === 0) {
+      } else {
         cookiesByDomain = [];
         cookiePageTotal = 0;
         cookiePageEaten = 0;
