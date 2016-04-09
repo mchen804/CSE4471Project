@@ -89,7 +89,7 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
       case (score >= 65): return 'D+';
       case (score >= 60): return 'D';
     }
-    return 'E+';
+    return 'E';
   };
 
   // get chrome history report card
@@ -146,7 +146,7 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
 })
 
 // controller for cookie monster section
-.controller('cookie', function($scope) {
+.controller('cookie', function($scope, $mdDialog) {
   // variable and data structure placeholders
   $scope.cookieMonster = chrome.extension.getBackgroundPage().cookieMonsterStatus;
   $scope.cookieColor = $scope.cookieMonster ? '#3F51B5' : '#dddddd';
@@ -172,8 +172,24 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
   $scope.cookiesByDomain = chrome.extension.getBackgroundPage().cookiesByDomain;
 
   // functions for setting whitelist valued -- set when whitelist is loaded
-  $scope.domainColor   = function(domain) { return ($scope.whitelist.indexOf(domain) !== -1) ? 'red' : 'black'; };
-  $scope.whitelistSite = function(domain) { return; };
+  $scope.domainColor     = function(domain) { return ($scope.whitelist.indexOf(domain) !== -1) ? 'red' : 'black'; };
+  $scope.whitelistSite   = function(domain) { return; };
+  $scope.addWhitelist    = function(domain) { return; };
+  $scope.deleteWhitelist = function(idx, domain) { return; };
+  $scope.clearWhitelist  = function() { return; };
+  $scope.importWhitelist = function() { return; };
+  $scope.exportWhitelist = function() { return; };
+
+  $scope.exportForm = false;
+  $scope.importForm = false;
+  $scope.toggleExportForm = function() {
+    if ($scope.importForm) $scope.importForm = false;
+    $scope.exportForm = !$scope.exportForm;
+  };
+  $scope.toggleImportForm = function() {
+    if ($scope.exportForm) $scope.exportForm = false;
+    $scope.importForm = !$scope.importForm;
+  };
 
   // compute or filter results to render to popup
   $scope.cookiesByDomain.forEach( function(domain) { if ($scope.currentTab.indexOf(domain) === -1) $scope.currentTab.push(domain); });
@@ -182,6 +198,7 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
   // load whitelist for updates
   chrome.storage.sync.get(['whitelist'], function(result) {
     $scope.whitelist = result.whitelist;
+    // load functions for modifying whitelist
     $scope.whitelistSite = function(domain) {
       if ($scope.whitelist.indexOf(domain) === -1) {
         $scope.whitelist.push(domain);
@@ -190,6 +207,111 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
       }
       console.log($scope.whitelist);
       chrome.storage.sync.set({'whitelist' : $scope.whitelist});
+    };
+    $scope.addWhitelist = function(domain) {
+      if ($scope.whitelist.indexOf(domain) === -1) {
+        $scope.domain = '';
+        $scope.whitelist.push(domain);
+        chrome.storage.sync.set({'whitelist' : $scope.whitelist});
+      } else {
+        $mdDialog.show(
+        $mdDialog.alert()
+        .clickOutsideToClose(true)
+        .title('Nope.')
+        .textContent('The domain ' + domain + ' is already whitelisted. Maybe try another.')
+        .ariaLabel('Alert Dialog')
+        .ok('Got it!')
+        );
+      }
+    };
+    $scope.deleteWhitelist = function(idx, domain) {
+      var confirm = $mdDialog.confirm()
+      .clickOutsideToClose(true)
+      .title('Are you sure?')
+      .textContent('The domain ' + domain + ' will be removed from your whitelist. This cannot be undone.')
+      .ariaLabel('Remove Answer')
+      .ok('Yes')
+      .cancel('No');
+      $mdDialog.show(confirm).then(function() {
+        $scope.whitelist.splice(idx, 1);
+        chrome.storage.sync.set({'whitelist' : $scope.whitelist});
+      }, function() {});
+    };
+    $scope.clearWhitelist = function(idx, domain) {
+      var confirm = $mdDialog.confirm()
+      .clickOutsideToClose(true)
+      .title('Are you sure?')
+      .textContent('This will delete your ENTIRE whitelist. This cannot be undone. Consider exporting first.')
+      .ariaLabel('Remove Answer')
+      .ok('Yes')
+      .cancel('No');
+      $mdDialog.show(confirm).then(function() {
+        $scope.whitelist = [];
+        chrome.storage.sync.set({'whitelist' : $scope.whitelist});
+      }, function() {});
+    };
+    $scope.exportWhitelist = function(password) {
+      // erase sensitive information
+      $scope.password = undefined;
+      var text = '';
+      var filename = "cookie-monster-whitelist.txt";
+      // encrypt and export
+      try {
+        text = sjcl.encrypt(password, $scope.whitelist.join(' '));
+      } catch(err) {
+        $mdDialog.show(
+        $mdDialog.alert()
+        .clickOutsideToClose(true)
+        .title('Export Failed')
+        .textContent('You must enter an encryption key.')
+        .ariaLabel('Alert Dialog')
+        .ok('Got it!')
+        );
+        return;
+      }
+      // download if encryption was successful
+      var pom = document.createElement('a');
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      pom.setAttribute('download', filename);
+      if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+      } else {
+        pom.click();
+      }
+    };
+    $scope.importWhitelist = function(hash, password) {
+      // clear sensitive information
+      $scope.importList = undefined;
+      $scope.password =   undefined;
+      // decrypt and import
+      if (hash && password) {
+        try {
+          var domains = sjcl.decrypt(password, hash).split(' ');
+          domains.forEach( function(domain) { if ($scope.whitelist.indexOf(domain) === -1) $scope.whitelist.push(domain); });
+          chrome.storage.sync.set({'whitelist' : $scope.whitelist});
+        } catch (err) {
+          $mdDialog.show(
+          $mdDialog.alert()
+          .clickOutsideToClose(true)
+          .title('Decryption Failed')
+          .textContent('Either your encrypted whitelist or encryption key is wrong.')
+          .ariaLabel('Alert Dialog')
+          .ok('Got it!')
+          );
+          return;
+        }
+      } else {
+        $mdDialog.show(
+        $mdDialog.alert()
+        .clickOutsideToClose(true)
+        .title('Import Failed')
+        .textContent('You must enter your whitelist AND your encryption key.')
+        .ariaLabel('Alert Dialog')
+        .ok('Got it!')
+        );
+      }
     };
   });
 })

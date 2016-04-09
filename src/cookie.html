@@ -1,0 +1,78 @@
+<!doctype html>
+<html data-ng-app="cookieMonster" ng-csp="">
+<head>
+  <meta charset="utf-8" />
+  <title>Cookie Monster</title>
+  <link rel="stylesheet" href="css/angular-material.min.css">
+  <link rel="stylesheet" href="css/angular-csp.css" type="text/css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="css/cookie.css" type="text/css" />
+</head>
+<body data-ng-controller="cookie">
+
+<section id="top-toolbar" layout="row" layout-align="center center">
+  <md-toolbar class="md-padding"><h1>Cookie Monster Whitelist</h1></md-toolbar>
+</section>
+
+<section>
+  <section id="whitelist-header">
+    <md-subheader class="md-primary">
+      <i id="power-button" ng-style="{ color : cookieColor }" ng-click="toggleCookieMonster()" class="fa fa-power-off"></i>
+      Edit Whitelist Configurations - {{whitelist.length}} Site(s) Added
+    </md-subheader>
+    <md-divider></md-divider>
+  </section>
+
+  <form name="whitelist-form" class="md-padding" ng-submit="addWhitelist(domain)">
+    <md-input-container>
+      <label>Enter a domain name (e.g. www.google.com)</label>
+      <input name="whitelist-input" ng-model="domain" autofocus>
+    </md-input-container>
+  </form>
+
+  <section id="whitelist-actions" layout="row" layout-align="center center">
+    <md-button class="md-primary" ng-click="clearWhitelist()">Clear Whitelist</md-button>
+    <md-button class="md-primary" ng-click="toggleImportForm()">Import Whitelist</md-button>
+    <md-button class="md-primary" ng-click="toggleExportForm()">Export Whitelist</md-button>
+  </section>
+
+  <form id="whitelist-export-form" class="md-padding" ng-show="exportForm" ng-submit="exportWhitelist(password)">
+    <md-input-container class="whitelist-export">
+      <label>Encryption Key</label>
+      <input type="password" id="password" ng-model="password">
+    </md-input-container>
+  </form>
+
+  <form id="whitelist-import-form" class="md-padding" ng-show="importForm" ng-submit="importWhitelist(importList, password)">
+    <md-input-container class="whitelist-import">
+      <label>Encrypted Whitelist</label>
+      <input id="import" name="import" ng-model="importList"/>
+    </md-input-container>
+    <md-input-container class="whitelist-import">
+      <label>Encryption Key</label>
+      <input type="password" id="password" ng-model="password">
+    </md-input-container>
+    <input type="submit" id="submit" value="Submit" />
+  </form>
+
+  <section id="whitelist-list">
+    <md-content id="whitelist-container">
+      <div class="whitelist-site" data-ng-repeat="site in whitelist">
+        {{site}}
+        <i class="fa fa-close" ng-click="deleteWhitelist($index, site)"></i>
+      </div>
+    </md-content>
+  </section>
+</section>
+
+<!-- load js at end -->
+<script src="js/jquery.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-animate.min.js"></script>
+<script src="js/angular-aria.min.js"></script>
+<script src="js/angular-messages.min.js"></script>
+<script src="js/angular-material.min.js"></script>
+<script src="js/sjcl.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

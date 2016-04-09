@@ -30,7 +30,7 @@ var eat = function(tab) {
     console.log(whitelist);
     // remove all associated cookies
     chrome.cookies.getAll({"url" : tab.url}, function(cookies) {
-      if (cookieMonsterStatus && cookies.length > 0) {
+      if (cookies && cookieMonsterStatus && cookies.length > 0) {
         cookiesByDomain = cookies.map( function(cookie) { return cookie.domain; });
         cookiePageEaten = 0;
         cookiePageTotal = 0;
@@ -80,7 +80,7 @@ chrome.tabs.onActivated.addListener( function( tabId ){
     // remove all associated cookies
     chrome.tabs.get( tabId.tabId, function(tab) {
       chrome.cookies.getAll({"url" : tab.url}, function(cookies) {
-        if (cookieMonsterStatus && cookies.length > 0) {
+        if (cookies && cookieMonsterStatus && cookies.length > 0) {
           cookiesByDomain = cookies.map( function(cookie) { return cookie.domain; });
           cookiePageEaten = 0;
           cookiePageTotal = 0;
