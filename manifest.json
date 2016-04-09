@@ -12,6 +12,7 @@
   "default_locale": "en",
   "background": {
     "page": "src/background.html",
+    "script": "src/js/background.js",
     "persistent": true
   },
   "options_page": "src/options/index.html",
@@ -30,7 +31,9 @@
     "tabs",
     "history",
     "idle",
-    "notifications"
+    "notifications",
+    "*://*/*",
+    "storage"
   ],
   "content_scripts": [
     {

@@ -64,24 +64,27 @@
     <md-divider></md-divider>
   </section>
   <section id="cookieStats">
+    <h1 id="percentage">{{eatenNow}} or {{percentage}}</h1>
     <h1 id="this-page">{{eatenNow}} on this page</h1>
     <h1 id="all-time"> {{eatenAll}} since install</h1>
   </section>
 
-  <section>
+  <section ng-show="currentTab.length > 0">
     <md-subheader class="md-primary">For This Page</md-subheader>
     <md-divider></md-divider>
+    <p>Click on a Domain Name to add it to the Whitelist</p>
   </section>
-  <section id="currentTab" class="md-padding">
-    <div data-ng-repeat="domain in currentTab" class="cookie-{{$index}}">
-      <i class="fa fa-heart"></i>
+  <section id="currentTab" class="md-padding" ng-show="currentTab.length > 0">
+    <div data-ng-repeat="domain in currentTab" title="{{domain}}" class="cookie cookie-{{$index}}" ng-click="whitelistSite(domain)">
+      <i ng-style="{color : domainColor(domain) }" class="fa fa-heart"></i>
       {{domain}}
     </div>
   </section>
 
   <section>
-    <md-subheader class="md-primary">Whitelist</md-subheader>
+    <md-subheader class="md-primary"><a href="cookie.html" target="_blank">Edit Whitelist</a></md-subheader>
     <md-divider></md-divider>
+    <p>{{whitelist.length}} Sites Whitelisted</p>
   </section>
 
 </section>

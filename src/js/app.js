@@ -16,11 +16,11 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
   $scope.history = [];
   $scope.reportCard = {
     finalScore : 0,
-    finalGrade : '',
+    finalGrade : '-',
     trustScore : 0,
-    trustGrade : '',
+    trustGrade : '-',
     childScore : 0,
-    childGrade : '',
+    childGrade : '-',
     count      : 0,
     concerns   : {},
     elements   : {}
@@ -121,7 +121,7 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
         // generate trustworthiness and child safety score
         $scope.reportCard.trustScore = $scope.computeScore(res, '0');
         $scope.reportCard.childScore = $scope.computeScore(res, '4');
-        $scope.reportCard.finalScore = ($scope.reportCard.trustScore + $scope.reportCard.childScore) / 2;
+        $scope.reportCard.finalScore = 0.66 * $scope.reportCard.trustScore + 0.33 * $scope.reportCard.childScore;
 
         // generate grade for scores
         $scope.reportCard.trustGrade = $scope.computeGrade($scope.reportCard.trustScore);
@@ -137,13 +137,18 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
         console.log(JSON.stringify($scope.reportCard));
       })
       .error( function(res) { console.log(JSON.stringify(res)); });
+    } else {
+      $scope.reportCard.trustScore = 100;
+      $scope.reportCard.childScore = 100;
+      $scope.reportCard.finalScore = 100;
     }
   });
 })
 
 // controller for cookie monster section
 .controller('cookie', function($scope) {
-  $scope.cookieMonster = true; // get from chrome.storage
+  // variable and data structure placeholders
+  $scope.cookieMonster = chrome.extension.getBackgroundPage().cookieMonsterStatus;
   $scope.cookieColor = $scope.cookieMonster ? '#3F51B5' : '#dddddd';
   $scope.toggleCookieMonster = function() {
     $scope.cookieMonster = !$scope.cookieMonster;
@@ -152,27 +157,40 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
     } else {
       $('#power-button').css('color', '#dddddd');
     }
-    // set in chrome.storage + save
+    chrome.extension.getBackgroundPage().cookieMonsterStatus = $scope.cookieMonster;
   };
 
-  $scope.eatenNow = 0;
-  $scope.eatenAll = 0;   // get from chrome.storage
-  $scope.whitelist = []; // get from chrome.storage
+  // non-persistent or derived variables
+  $scope.percentage = '0%';
+  $scope.pageTotal  = chrome.extension.getBackgroundPage().cookiePageTotal;
+  $scope.eatenNow   = chrome.extension.getBackgroundPage().cookiePageEaten;
   $scope.currentTab = [];
+  $scope.whitelist  = [];
 
-  // get all cookies in browser + eat against whitelist
-  chrome.cookies.getAll({}, function(cookies) {
-    //console.log('cookies :' + JSON.stringify(cookies));
-  });
+  // persistent variables
+  $scope.eatenAll        = chrome.extension.getBackgroundPage().cookiesSinceInstall;
+  $scope.cookiesByDomain = chrome.extension.getBackgroundPage().cookiesByDomain;
 
-  // get all cookies for current tab
-  chrome.tabs.query({"status" : "complete", "windowId" : chrome.windows.WINDOW_ID_CURRENT, "active" : true}, function(tabs) {
-    chrome.cookies.getAll({"url" : tabs[0].url}, function(cookies) {
-      console.log(JSON.stringify(cookies));
-      cookies.forEach( function(cookie) {
-        if ($scope.currentTab.indexOf(cookie.domain) === -1) $scope.currentTab.push(cookie.domain);
-      });
-    });
+  // functions for setting whitelist valued -- set when whitelist is loaded
+  $scope.domainColor   = function(domain) { return ($scope.whitelist.indexOf(domain) !== -1) ? 'red' : 'black'; };
+  $scope.whitelistSite = function(domain) { return; };
+
+  // compute or filter results to render to popup
+  $scope.cookiesByDomain.forEach( function(domain) { if ($scope.currentTab.indexOf(domain) === -1) $scope.currentTab.push(domain); });
+  if ($scope.pageTotal > 0) $scope.percentage = Math.floor(($scope.eatenNow / $scope.pageTotal) * 100) + '%';
+
+  // load whitelist for updates
+  chrome.storage.sync.get(['whitelist'], function(result) {
+    $scope.whitelist = result.whitelist;
+    $scope.whitelistSite = function(domain) {
+      if ($scope.whitelist.indexOf(domain) === -1) {
+        $scope.whitelist.push(domain);
+      } else {
+        $scope.whitelist.splice($scope.whitelist.indexOf(domain), 1);
+      }
+      console.log($scope.whitelist);
+      chrome.storage.sync.set({'whitelist' : $scope.whitelist});
+    };
   });
 })
 

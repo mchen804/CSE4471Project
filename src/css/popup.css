@@ -1,11 +1,11 @@
 html, body {
-  height: 100%;
-  width: 100%
+  max-width: 150px !important;
 }
 
 p {
   font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
   text-align: center;
+  max-width: 150px !important;
 }
 
 a, a:visited, a:hover, a:active {
@@ -74,8 +74,12 @@ a:hover {
   text-align: center;
 }
 
+#cookieStats h1#percentage {
+  font-size: 18px;
+}
+
 #currentTab {
-  padding: 20px 10px;
+  padding: 0 20px 20px 20px;
 }
 
 #currentTab div {
@@ -85,6 +89,11 @@ a:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cookie, .cookie i {
+  outline: none;
+  cursor: pointer;
 }
 
 .md-subheader-inner {
