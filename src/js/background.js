@@ -53,6 +53,7 @@ var eat = function(tab) {
         cookiePageTotal = 0;
         cookiePageEaten = 0;
       }
+      chrome.browserAction.setBadgeText({ text : cookiePageEaten + '' });
     });
     // remove all other cookies not associated with the site
     chrome.cookies.getAll({}, function(cookies) {
