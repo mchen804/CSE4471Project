@@ -26,6 +26,8 @@
     "contentSettings",
     "contextMenus",
     "cookies",
+    "<all_urls>",
+    "tabs",
     "history",
     "idle",
     "notifications"

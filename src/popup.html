@@ -1,60 +1,98 @@
 <!doctype html>
-<html>
-	<head>
-		<link rel="stylesheet" href="css/style.css" type="text/css" />
-		<script type="text/javascript" src="js/inject.js"></script>
-		<script type="text/javascript" src="js/popup.js"></script>
-	</head>
-	<body>
-		<div id="Tabs">
-			<ul>
-				<li><a href="">Cookie Monster</a></li>
-				<li><a href="reportcard.html">Report Card</a></li>
-			</ul>
-		</div>
+<html data-ng-app="cookieMonster" ng-csp="">
+<head>
+    <!--
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <script type="text/javascript" src="js/inject.js"></script>
+    <script type="text/javascript" src="js/popup.js"></script>
+    -->
+  <meta charset="utf-8" />
+  <title>Cookie Monster</title>
+  <link rel="stylesheet" href="css/angular-material.min.css">
+  <link rel="stylesheet" href="css/angular-csp.css" type="text/css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="css/popup.css" type="text/css" />
+</head>
+<body data-ng-controller="popup">
 
-		<div id="appInfo">
-  			<p>
-    		The 'Cookie Monster' portion of this extension can be used to gain greater 
-    		control over your browser <a href="">cookies</a>. Everytime you visit a website,
-    		any cookie that may have been added by that site is displayed below. You then have the 
-    		option to delete the cookie and add the site to a black list where every subsequent 
-    		visit will see any cookies blocked.
-  			</p>
-		</div>
-		
-		<div class="currentInfo">
-			<h1>Current Info.</h1>
-			<table>
-				<tr>
-					<th>Site</th>
-					<th>Cookie</th>
-				</tr>
-				<tr>
-					<td class="Site">temp</td>
-					<td class="Cookie">temp</td>
-					<td class="deleteButton">Delete</td>
-				</tr>
-			</table>
-		</div>
+<section id="top-toolbar" layout="row" layout-align="center center">
+  <md-toolbar class="md-padding"><h5 ng-click="toggleView()">{{view.text}}</h5></md-toolbar>
+</section>
 
-		<div class="blackList">
-			<h1>Black List</h1>
-			<table>
-				<tr>
-					<th>Site</th>
-				</tr>
-				<tr>
-					<td class="Site">temp</td>
-					<td class="removeButton">Remove</td>
-				</tr>
-			</table>
-		</div>
+<section ng-show="!view.status" data-ng-controller="report">
+  <section>
+    <md-subheader class="md-primary"><a href="reportcard.html" target="_blank">Overall Score</a></md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="final-card" class="" layout="column" layout-align="center center">
+    <md-progress-circular md-mode="determinate" value="0" md-diameter="100" color-code-confidence="{{reportCard.finalScore}}"></md-progress-circular>
+    <h1 id="final-grade">{{reportCard.finalGrade}}</h1>
+  </section>
 
-		<div id="bottomBar">
-			<p>2016 OSU CSE 4471</p>
-			<p>Lou, Chen, Olson, Pan</p>
-			<p><a href="">Donations</a></p>
-		</div>
-	</body>
-<html>
+  <section>
+    <md-subheader class="md-primary"><a href="reportcard.html" target="_blank">Trustworthiness</a></md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="trust-card" class="" layout="column" layout-align="center center">
+    <md-progress-circular md-mode="determinate" value="0" md-diameter="100" color-code-confidence="{{reportCard.trustScore}}"></md-progress-circular>
+    <h1 id="trust-grade">{{reportCard.trustGrade}}</h1>
+  </section>
+
+  <section>
+    <md-subheader class="md-primary"><a href="reportcard.html" target="_blank">Child Safety</a></md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="child-card" class="" layout="column" layout-align="center center">
+    <md-progress-circular md-mode="determinate" value="0" md-diameter="100" color-code-confidence="{{reportCard.childScore}}"></md-progress-circular>
+    <h1 id="child-grade">{{reportCard.childGrade}}</h1>
+  </section>
+
+  <section>
+    <md-subheader class="md-primary"><a href="reportcard.html" target="_blank">View Full Report</a></md-subheader>
+    <md-divider></md-divider>
+    <p>{{reportCard.count}} Sites in History</p>
+  </section>
+</section>
+
+<section ng-show="view.status" data-ng-controller="cookie">
+  <section class="md-padding" layout="row" layout-align="center center">
+    <i id="power-button" ng-style="{ color : cookieColor }" ng-click="toggleCookieMonster()" class="fa fa-power-off"></i>
+  </section>
+
+  <section>
+    <md-subheader class="md-primary">Cookies Eaten</md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="cookieStats">
+    <h1 id="this-page">{{eatenNow}} on this page</h1>
+    <h1 id="all-time"> {{eatenAll}} since install</h1>
+  </section>
+
+  <section>
+    <md-subheader class="md-primary">For This Page</md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="currentTab" class="md-padding">
+    <div data-ng-repeat="domain in currentTab" class="cookie-{{$index}}">
+      <i class="fa fa-heart"></i>
+      {{domain}}
+    </div>
+  </section>
+
+  <section>
+    <md-subheader class="md-primary">Whitelist</md-subheader>
+    <md-divider></md-divider>
+  </section>
+
+</section>
+
+<!-- load js at end -->
+<script src="js/jquery.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-animate.min.js"></script>
+<script src="js/angular-aria.min.js"></script>
+<script src="js/angular-messages.min.js"></script>
+<script src="js/angular-material.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
