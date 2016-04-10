@@ -104,8 +104,7 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
             $scope.reportCard.count++;
             $scope.reportCard.elements[url.replace(/^www\./, '')] = { visited : 1 };
           } else {
-            $scope.reportCard.elements[url.replace(/^www\./, '')].visited++;
-          }
+            $scope.reportCard.elements[url.replace(/^www\./, '')].visited++; }
         }
       });
     });

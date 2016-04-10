@@ -33,13 +33,15 @@ md-input-container {
 
 #whitelist-actions {
   position: relative;
-  margin-top: -20px;
-  margin-bottom: 20px;
+  margin-top: -30px;
+  margin-bottom: 30px;
 }
 
 #whitelist-import-form,
 #whitelist-export-form {
+  position: relative;
   margin: 0 auto;
+  margin-top: -30px !important;
 }
 
 .whitelist-import,
@@ -47,13 +49,18 @@ md-input-container {
   text-align: center;
   width: 100%;
   margin: 0 !important;
-  margin-top: -20px !important;
 }
 
 .whitelist-import input,
 .whitelist-export input {
   outline: none;
   cursor: pointer;
+}
+
+#submit {
+  position: absolute;
+  top: 55%;
+  right: 10px;
 }
 
 #import-button {
