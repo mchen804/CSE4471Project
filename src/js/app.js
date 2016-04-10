@@ -22,9 +22,10 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
     childScore : 0,
     childGrade : '-',
     count      : 0,
-    concerns   : {},
-    elements   : {}
+    elements   : {},
   };
+  $scope.concerns = [];
+  $scope.blacklists = [];
 
   // functions for computing browsing history scores & grades
   $scope.computeScore = function(res, param) {
@@ -55,6 +56,18 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
           break;
         default:
           classified.very_poor.push(res[key]);
+          break;
+      }
+      // push reputation/confidence to $scope.reportcard.elements for url key
+      var element = $scope.reportCard.elements[key.replace(/^www\./, '')];
+      switch(param) {
+        case '0':
+          element.trustScore = res[key][param];
+          break;
+        case '4':
+          element.childScore = res[key][param];
+          break;
+        default:
           break;
       }
     });
@@ -91,6 +104,59 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
     }
     return 'E';
   };
+  $scope.derive = function(url, id, confidence) {
+    var group = {
+      '401' : 'Negative',
+      '402' : 'Questionable',
+      '403' : 'Questionable',
+      '404' : 'Positive',
+    };
+    var categorize = {
+      '101' : 'Malware or Viruses',
+      '102' : 'Poor Customer Service',
+      '103' : 'Phishing',
+      '104' : 'Scam',
+      '105' : 'Potentially Illegal',
+      '201' : 'Misleading Claims or Unethical',
+      '202' : 'Privacy Risks',
+      '203' : 'Suspicious',
+      '204' : 'Hate or Discrimination',
+      '205' : 'Spam',
+      '206' : 'Potentially Unwanted Programs',
+      '207' : 'Ads/Pop-ups',
+      '301' : 'Online Tracking',
+      '302' : 'Alternative or Controversial Medicine',
+      '303' : 'Opinions, Religion, or Politics',
+      '304' : 'Other',
+      '401' : 'Adult Content',
+      '402' : 'Incidental Nudity',
+      '403' : 'Gruesome or Shocking',
+      '404' : 'Site for Kids',
+    };
+    switch(true) {
+      case (id.match(/^10[1-5]/) !== null): return [url, 'Negative',     categorize[id], confidence];
+      case (id.match(/^20[1-7]/) !== null): return [url, "Questionable", categorize[id], confidence];
+      case (id.match(/^30[1-4]/) !== null): return [url, 'Neutral',      categorize[id], confidence];
+      case (id.match(/^40[1-4]/) !== null): return [url,  group[id],     categorize[id], confidence];
+      default:                              return [url, 'Positive',     'Good Site',    confidence];
+    }
+  };
+  $scope.getClassificationContext = function(group) {
+    switch(group) {
+      case 'Negative':     return 'danger';
+      case 'Questionable': return 'danger';
+      case 'Neutral':      return 'info';
+      default:             return "success";
+    }
+  };
+  $scope.getScoreContext = function(score) {
+    switch(true) {
+      case (score >= 80): return 'success';
+      case (score >= 60): return 'info';
+      case (score >= 40): return 'danger';
+      default:            return 'danger';
+    }
+  };
 
   // get chrome history report card
   chrome.history.search({'text' : ''}, function (history) {
@@ -102,9 +168,13 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
           if ($scope.history.indexOf(url) === -1) {
             $scope.history.push(url);
             $scope.reportCard.count++;
-            $scope.reportCard.elements[url.replace(/^www\./, '')] = { visited : 1 };
-          } else {
-            $scope.reportCard.elements[url.replace(/^www\./, '')].visited++; }
+            $scope.reportCard.elements[url.replace(/^www\./, '')] = {
+              visited    : 1,
+              trustScore : [0, 0],
+              childScore : [0, 0],
+              blacklists : []
+            };
+          } else { $scope.reportCard.elements[url.replace(/^www\./, '')].visited++; }
         }
       });
     });
@@ -127,11 +197,19 @@ angular.module('cookieMonster', ['ngMaterial', 'ngAnimate', 'ngMessages'])
         $scope.reportCard.childGrade = $scope.computeGrade($scope.reportCard.childScore);
         $scope.reportCard.finalGrade = $scope.computeGrade($scope.reportCard.finalScore);
 
-        // generate potential concerns negative/questionable
-
-        // generate potential concerns neutral
-
-        // generate good site score
+        // generate potential concerns negative/questionable/neutral
+        Object.keys(res).forEach( function(key) {
+          var element = $scope.reportCard.elements[key.replace(/^www\./, '')];
+          var concern = res[key].hasOwnProperty('categories') ? concern = res[key].categories : {};
+          // push each mapped concern + confidence to element.concerns
+          Object.keys(concern).forEach( function(id) { $scope.concerns.push( $scope.derive(key, id, concern[id]) ); });
+          // push blacklists to element.blacklists
+          if (res[key].hasOwnProperty('blacklists')) {
+            Object.keys(res[key].blacklists).forEach( function(blacklist) {
+              $scope.blacklists.push([key, blacklist]);
+            });
+          }
+        });
 
         console.log(JSON.stringify($scope.reportCard));
       })

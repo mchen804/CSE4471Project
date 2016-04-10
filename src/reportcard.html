@@ -1,10 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-ng-app="cookieMonster" ng-csp="">
 <head>
-	<script src="js/jquery.js"></script>
-	<script src="js/reportcard.js"></script>
+  <meta charset="utf-8" />
+  <title>Cookie Monster</title>
+  <link rel="stylesheet" href="css/angular-material.min.css">
+  <link rel="stylesheet" href="css/angular-csp.css" type="text/css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="css/reportcard.css" type="text/css" />
 </head>
-<body>
-</body>
+<body data-ng-controller="report">
 
+<section id="top-toolbar" layout="row" layout-align="center center">
+  <md-toolbar class="md-padding"><h1>Your Browsing History Report Card</h1></md-toolbar>
+</section>
+
+<section id="report-card">
+  <section class="report-header">
+    <md-subheader class="md-primary">Snapshot</md-subheader>
+    <md-divider></md-divider>
+  </section>
+
+  <section id="rating-header" class="md-padding" layout="row" layout-align="center center">
+    <div flex=33>Overall</div>
+    <div flex=33>Trustworthiness</div>
+    <div flex=33>Child Safety</div>
+  </section>
+  <section id="ratings" class="md-padding" layout="row" layout-align="center center">
+    <div class="flexbox" flex="33" layout="column" layout-align="center center">
+      <md-progress-circular md-mode="determinate" value="0" md-diameter="150" color-code-confidence="{{reportCard.finalScore}}"></md-progress-circular>
+      <h1 id="final-grade">{{reportCard.finalGrade}}</h1>
+    </div>
+
+    <div class="flexbox" flex="33" layout="column" layout-align="center center">
+      <md-progress-circular md-mode="determinate" value="0" md-diameter="150" color-code-confidence="{{reportCard.trustScore}}"></md-progress-circular>
+      <h1 id="trust-grade">{{reportCard.trustGrade}}</h1>
+    </div>
+
+    <div class="flexbox" flex="33" layout="column" layout-align="center center">
+      <md-progress-circular md-mode="determinate" value="0" md-diameter="150" color-code-confidence="{{reportCard.childScore}}"></md-progress-circular>
+      <h1 id="child-grade">{{reportCard.childGrade}}</h1>
+    </div>
+  </section>
+
+  <section id="trust-header" class="report-header">
+    <md-subheader class="md-primary">Trustworthiness Report</md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="trust-report" class="md-padding">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Score</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="(url, info) in reportCard.elements" class="{{getScoreContext(info.trustScore[0])}}">
+          <th>{{url}}</th>
+          <th>{{info.trustScore[0]}}</th>
+          <th>{{info.trustScore[1]}}</th>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="child-header" class="report-header">
+    <md-subheader class="md-primary">Child Safety Report</md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="child-report" class="md-padding">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Score</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="(url, info) in reportCard.elements" class="{{getScoreContext(info.childScore[0])}}">
+          <th>{{url}}</th>
+          <th>{{info.childScore[0]}}</th>
+          <th>{{info.childScore[1]}}</th>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="concern-header" class="report-header">
+    <md-subheader class="md-primary">Categorization</md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="categories" class="md-padding">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Category</th>
+          <th>Classification</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="concern in concerns" class="{{getClassificationContext(concern[1])}}">
+          <th>{{concern[0]}}</th>
+          <th>{{concern[1]}}</th>
+          <th>{{concern[2]}}</th>
+          <th>{{concern[3]}}</th>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="blacklist-header" class="report-header" ng-show="blacklists.length > 0">
+    <md-subheader class="md-primary">Third Party Blacklists</md-subheader>
+    <md-divider></md-divider>
+  </section>
+  <section id="blacklists" class-"md-padding" ng-show="blacklists.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Blacklist Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="blacklist in blacklists" class="danger">
+          <th>{{blacklist[0]}}</th>
+          <th>{{blacklist[1]}}</th>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>
+
+<!-- load js at end -->
+<script src="js/jquery.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-animate.min.js"></script>
+<script src="js/angular-aria.min.js"></script>
+<script src="js/angular-messages.min.js"></script>
+<script src="js/angular-material.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/sjcl.js"></script>
+<script src="js/app.js"></script>
+</body>
 </html>

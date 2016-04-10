@@ -15,7 +15,7 @@
     "script": "src/js/background.js",
     "persistent": true
   },
-  "options_page": "src/options/index.html",
+  "options_page": "src/cookie.html",
   "browser_action": {
     "default_icon":  "src/img/icon19.png",
     "default_title": "Cookie Monster",

@@ -27,7 +27,6 @@ var eat = function(tab) {
   // load current whitelist on update/create
   chrome.storage.sync.get(['whitelist'], function(result) {
     var whitelist = result.whitelist ? result.whitelist : [];
-    console.log(whitelist);
     // remove all associated cookies
     chrome.cookies.getAll({"url" : tab.url}, function(cookies) {
       if (cookies && cookieMonsterStatus && cookies.length > 0) {
@@ -38,7 +37,6 @@ var eat = function(tab) {
         cookies.forEach( function(cookie) {
           if (whitelist.indexOf(cookie.domain) === -1) {
             var fqdn = getURL(cookie);
-            console.log(fqdn);
             chrome.cookies.remove({ url : fqdn, name : cookie.name, storeId : cookie.storeId });
             chrome.cookies.remove({ url : fqdn.replace('www.', ''), name : cookie.name, storeId : cookie.storeId });
             cookiePageEaten++;
@@ -61,7 +59,6 @@ var eat = function(tab) {
         cookies.forEach( function(cookie) {
           if (whitelist.indexOf(cookie.domain) === -1) {
             var fqdn = getURL(cookie);
-            console.log(fqdn);
             chrome.cookies.remove({ url : fqdn, name : cookie.name, storeId : cookie.storeId });
             chrome.cookies.remove({ url : fqdn.replace('www.', ''), name : cookie.name, storeId : cookie.storeId });
             cookiesSinceInstall++;
@@ -76,7 +73,6 @@ chrome.tabs.onActivated.addListener( function( tabId ){
   // load current whitelist on update/create
   chrome.storage.sync.get(['whitelist'], function(result) {
     var whitelist = result.whitelist ? result.whitelist : [];
-    console.log(whitelist);
     // remove all associated cookies
     chrome.tabs.get( tabId.tabId, function(tab) {
       chrome.cookies.getAll({"url" : tab.url}, function(cookies) {
@@ -88,7 +84,6 @@ chrome.tabs.onActivated.addListener( function( tabId ){
           cookies.forEach( function(cookie) {
             if (whitelist.indexOf(cookie.domain) === -1) {
               var fqdn = getURL(cookie);
-              console.log(fqdn);
               chrome.cookies.remove({ url : fqdn, name : cookie.name, storeId : cookie.storeId });
               chrome.cookies.remove({ url : fqdn.replace('www.', ''), name : cookie.name, storeId : cookie.storeId });
               cookiePageEaten++;

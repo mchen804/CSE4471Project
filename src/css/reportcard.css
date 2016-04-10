@@ -1,0 +1,54 @@
+#top-toolbar h1 {
+  font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+  text-align: center;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+
+  outline: none;
+  cursor: pointer;
+  margin: 0 !important;
+}
+
+#top-toolbar md-toolbar {
+  min-height: 0 !important;
+}
+
+#rating-header div {
+  font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+  font-size: 15px;
+  color: #3F51B5;
+  text-align: center;
+}
+
+#ratings {
+  position: relative;
+  margin-bottom: 30px !important;
+}
+
+#final-grade, #trust-grade, #child-grade {
+  position: absolute;
+  font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+  font-size: 65px;
+  top: 10%;
+  width: 100%;
+  text-align: center;
+}
+
+.report-header {
+  text-align: center;
+  margin: 10px auto;
+}
+
+.flexbox {
+  position: relative;
+}
+
+#ratings, #rating-header,
+#categories, #child-report, #trust-report {
+  width: 75%;
+  margin: 0 auto;
+}
